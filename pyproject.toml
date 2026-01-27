@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=65", "wheel", "build"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "glyphlock"
+version = "0.1.0"
+description = "Glyph-based file obfuscation with intentional access control"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+
+authors = [
+  { name = "Malek Yehya" }
+]
+
+dependencies = []
+
+[project.scripts]
+glyphlock = "glyphlock.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["glyphlock"]
+
