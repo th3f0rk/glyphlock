@@ -37,9 +37,8 @@ def main():
                     recovery=args.recovery,
                 )
         elif args.cmd == "decode-dir":
-            pw = input("Password: ")
             for p in engine.walker.iter_files(args.path):
-                engine.decode_file(p, pw)
+                engine.decode_file(p, None)
     except GlyphLockError as e:
         sys.stderr.write(f"glyphlock error: {e}\n")
         sys.exit(1)
