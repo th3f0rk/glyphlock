@@ -1,9 +1,7 @@
 #glyphlock/security.py
 import getpass
 import hashlib
-import os
 import secrets
-import stat
 from typing import Optional, Tuple
 
 from .headers import LockInfo, RecoveryInfo
@@ -11,6 +9,9 @@ from .errors import AccessDenied
 
 
 class AccessController:
+    def __init__(self):
+        self._unlocked = False
+
     def derive_key(self, password: str, salt: bytes) -> bytes:
         return hashlib.pbkdf2_hmac(
             "sha256", password.encode(), salt, 200_000
@@ -35,11 +36,15 @@ class AccessController:
         if lock is None:
             return
 
+        if self._unlocked:
+            return
+
         if password:
             if secrets.compare_digest(
                 self.derive_key(password, lock.salt),
                 lock.password_hash,
             ):
+                self._unlocked = True
                 return
 
         if recovery:
@@ -50,6 +55,7 @@ class AccessController:
                 hashlib.sha256(token.encode()).digest(),
                 recovery.recovery_hash,
             ):
+                self._unlocked = True
                 return
 
         raise AccessDenied("access denied")

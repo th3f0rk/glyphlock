@@ -1,7 +1,6 @@
 #glyphlock/filesystem.py
 import os
 import tempfile
-import stat
 
 
 class AtomicFilesystem:
@@ -13,6 +12,14 @@ class AtomicFilesystem:
         with open(path, "r", encoding="utf-8") as f:
             return f.readlines()
 
+    def _fsync_dir(self, path: str):
+        d = os.path.dirname(path) or "."
+        dirfd = os.open(d, os.O_DIRECTORY)
+        try:
+            os.fsync(dirfd)
+        finally:
+            os.close(dirfd)
+
     def atomic_write(self, path: str, data: bytes | str, binary: bool):
         mode = "wb" if binary else "w"
         d = os.path.dirname(path) or "."
@@ -23,6 +30,7 @@ class AtomicFilesystem:
                 f.flush()
                 os.fsync(f.fileno())
             os.replace(tmp, path)
+            self._fsync_dir(path)
         finally:
             if os.path.exists(tmp):
                 os.unlink(tmp)

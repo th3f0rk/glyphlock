@@ -23,7 +23,7 @@ The transformation is fully reversible and does not modify the original data.
 
 Glyphlock is meant to prevent **accidental or casual access** to files.
 
-It is useful when:
+It is designed to be used when:
 - files should not be readable at a glance
 - sensitive data should not be opened unintentionally
 - projects need to be parked safely on disk
@@ -51,6 +51,9 @@ The recovery key:
 - can be used if the password is lost
 
 If both the password and recovery key are lost, the file cannot be recovered.
+
+Currently Glyphlock allows for a user to create an empty password. 
+If the user does so they must press 'Enter' when prompted for the password.
 
 ---
 
@@ -85,19 +88,19 @@ The following are skipped automatically:
 
 Only user-authored files are processed by default.
 
+---
+
 ## How to use this module
 
-Glyphlock is used as a command-line tool.
+Glyphlock is used as a command-line tool. Only the `encode` and `encode-directory` commands accept access flags. All commands accept `--plan` flags.
 
 Encode a single file:
-
----
 
 ```bash
 glyphlock encode file.txt
 ```
 
-Decode a file:
+Decode a file (decode commands do not accept access flags):
 
 ```bash
 glyphlock decode file.glyph
@@ -109,8 +112,62 @@ Encode a directory with a password and recovery key:
 glyphlock encode-dir project --lock --recovery
 ```
 
-Decode a directory:
+Decode a directory (decode commands do not accept access flags):
 
 ```bash
 glyphlock decode-dir project
 ```
+---
+
+## Access flags
+
+The following flags are supported when encoding files or directories:
+
+- `--lock`  
+  Require a password to decode the file(s).
+
+- `--recovery`  
+  Generate a recovery key that can be used if the password is lost.
+
+When operating on directories:
+- the password is requested once per command
+- the recovery key (if enabled) is generated once per command
+- the same access credentials apply to all files in the operation
+
+When operating on a single file:
+- the same flags apply, but only affect that file
+
+---
+
+## Planning and dry runs
+
+Glyphlock supports a `--plan` flag for all commands.
+
+When `--plan` is used:
+- no files are modified
+- no passwords are requested
+- no recovery keys are generated
+- the operation is printed instead of executed
+
+This allows you to preview exactly what glyphlock would do.
+
+Examples:
+
+```bash
+glyphlock encode file.txt --plan
+glyphlock encode-dir project --plan
+glyphlock decode-dir project --plan
+```
+
+---
+
+## Security note
+
+Glyphlock is not encryption.
+
+It is designed to prevent casual or accidental access, not to withstand
+determined cryptographic attacks.
+
+If you require strong confidentiality against an active adversary, use
+established encryption tools such as age, gpg, or full-disk encryption.
+

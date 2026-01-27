@@ -6,9 +6,9 @@ from typing import Optional
 
 from .codec import GlyphCodec
 from .filesystem import AtomicFilesystem
-from .headers import GlyphHeader
+from .headers import GlyphHeader, RecoveryInfo
 from .security import AccessController
-from .errors import IntegrityError
+from .errors import IntegrityError, FormatError
 from .walker import FileWalker
 
 
@@ -23,7 +23,7 @@ class GlyphLockEngine:
         self,
         path: str,
         password: Optional[str],
-        recovery: bool,
+        recovery: Optional[RecoveryInfo],
     ):
         if path.endswith(".glyph"):
             return
@@ -34,12 +34,7 @@ class GlyphLockEngine:
         checksum = hashlib.sha256(raw).hexdigest()
 
         lock = self.security.create_lock(password) if password else None
-        rec = None
-        if recovery:
-            rec, token = self.security.create_recovery()
-            print("\nRecovery key (store safely, shown once):")
-            print(token)
-            print()
+        rec = recovery
 
         header = GlyphHeader(
             os.path.splitext(path)[1],
@@ -56,7 +51,11 @@ class GlyphLockEngine:
         os.remove(path)
 
     def decode_file(self, path: str, password: Optional[str]):
-        lines = self.fs.read_lines(path)
+        try:
+            lines = self.fs.read_lines(path)
+        except UnicodeDecodeError:
+            raise FormatError("invalid glyph file encoding")
+
         header, idx = GlyphHeader.parse(lines)
 
         self.security.verify(header.lock, header.recovery, password)

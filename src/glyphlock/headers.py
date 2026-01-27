@@ -36,7 +36,6 @@ class GlyphHeader:
         idx = 3
         lock = None
         recovery = None
-
         if idx < len(lines) and lines[idx].startswith("@lock:"):
             idx += 1
             salt = bytes.fromhex(lines[idx][6:].strip())
@@ -44,13 +43,11 @@ class GlyphHeader:
             password_hash = bytes.fromhex(lines[idx][6:].strip())
             idx += 1
             lock = LockInfo(salt, password_hash)
-
         if idx < len(lines) and lines[idx].startswith("@recovery:"):
             idx += 1
             recovery_hash = bytes.fromhex(lines[idx][15:].strip())
             idx += 1
             recovery = RecoveryInfo(recovery_hash)
-
         return cls(ext, mode, checksum, lock, recovery), idx
 
     def serialize(self) -> str:
