@@ -33,10 +33,7 @@ class AccessController:
         recovery: Optional[RecoveryInfo],
         password: Optional[str]
     ) -> None:
-        if lock is None:
-            return
-
-        if self._unlocked:
+        if lock is None or self._unlocked:
             return
 
         if password:
@@ -51,6 +48,8 @@ class AccessController:
             token = getpass.getpass(
                 "Password invalid. Enter recovery key (leave empty to abort): "
             )
+            if not token:
+                raise AccessDenied("access denied")
             if token and secrets.compare_digest(
                 hashlib.sha256(token.encode()).digest(),
                 recovery.recovery_hash,
