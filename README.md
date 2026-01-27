@@ -71,11 +71,27 @@ All file operations use atomic replacement to minimize the risk of data loss.
 
 ---
 
+## Directory handling
+
+When operating on directories, glyphlock walks the directory tree recursively.
+
+The following are skipped automatically:
+- symbolic links
+- hidden directories
+- version control metadata (`.git`, `.hg`, `.svn`)
+- virtual environments (`.venv`, `env`)
+- Python cache directories (`__pycache__`)
+- editor configuration directories
+
+Only user-authored files are processed by default.
+
 ## How to use this module
 
 Glyphlock is used as a command-line tool.
 
 Encode a single file:
+
+---
 
 ```bash
 glyphlock encode file.txt
