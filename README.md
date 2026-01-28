@@ -5,6 +5,38 @@ with optional access control.
 
 ---
 
+## How to install glyphlock
+
+Glyphlock is distributed by **PyPI**. You will need to install `pipx` since **PEP 668** doesn't 
+allow for externally managed systems to be installed with `pip`. This isn't entirely 
+enforced depending on how you installed Python or your operating system. 
+**The guaranteed method on all systems is to use `pipx`**
+
+To install pipx you can do
+```bash
+brew install pipx
+pipx ensurepath
+```
+After running `pipx ensurepath`, reload your terminal or open a new instance.
+For example if you use a zsh terminal run
+```bash
+exec zsh
+```
+Now you can install glyphlock
+```bash
+pipx install glyphlock
+```
+To verify it is installed you can do
+```bash
+glyphlock --help
+```
+or
+```bash
+which glyphlock
+```
+
+---
+
 ## What glyphlock does
 
 Glyphlock converts a file into a deterministic representation made up of
