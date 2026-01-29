@@ -34,7 +34,15 @@ def main():
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
+    parser.add_argument(
+            "--version",
+            action="version",
+            version="glyphlock 0.1.5"
+    )
+
     sub = parser.add_subparsers(dest="cmd", required=True)
+
+
 
     ef = sub.add_parser(
         "encode",

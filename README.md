@@ -35,6 +35,9 @@ or
 which glyphlock
 ```
 
+**NOTE**
+**Glyphlock uses Unicode Egiption Hieroglyphs so for now a font where those unicode characters are included is needed**
+
 ---
 
 ## What glyphlock does
